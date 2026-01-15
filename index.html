@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Friends Time</title>
+    <title>Buddy Dam Timer</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0d1117;
             --card-bg: #161b22;
-            --accent-color: #7d5fff; /* Roxo vibrante */
+            --accent-color: #7d5fff;
             --text-main: #f0f6fc;
             --text-dim: #8b949e;
             --border-color: #30363d;
@@ -20,63 +20,123 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
         }
 
-        /* Container Centralizado com Width 90% e Max-Width */
+        /* Identidade do Grupo */
+        .brand {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #7d5fff, #a29bfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Container Principal Corrigido */
         section {
             background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 40px;
-            width: 90%; /* Ocupa 90% da tela em dispositivos menores */
-            max-width: 500px; /* Limite fixo para telas grandes */
+            border-radius: 20px;
+            padding: 30px;
+            width: 95%;
+            max-width: 500px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            box-sizing: border-box;
-            margin: 20px;
+            box-sizing: border-box; /* Garante que padding não "estoure" a largura */
         }
 
         .input-row {
             display: flex;
+            flex-wrap: wrap; /* Evita que o select atravesse em telas pequenas */
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            gap: 20px;
+            margin-bottom: 20px;
+            gap: 15px;
         }
 
         .input-row label {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-dim);
-            white-space: nowrap;
             flex: 1;
+            min-width: 120px;
         }
 
         select, input {
-            flex: 1.5;
+            flex: 2;
+            min-width: 0; /* Correção crucial para o select não vazar no Firefox/Chrome */
+            width: 100%;
             background-color: #0d1117;
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 12px 15px;
+            padding: 12px;
             border-radius: 8px;
             font-family: inherit;
             outline: none;
-            transition: border-color 0.3s ease;
+            box-sizing: border-box;
         }
 
-        select:focus, input:focus {
-            border-color: var(--accent-color);
+        /* Área de Membros - Estilo Onda/Flutuante */
+        .team-section {
+            margin-top: 50px;
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
+
+        .member-chip {
+            background: var(--card-bg);
+            padding: 10px 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: float 4s ease-in-out infinite;
+            transition: 0.3s;
+        }
+
+        .member-chip i {
+            font-size: 1.2rem;
+        }
+
+        /* Animação de Onda/Flutuação */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Delay diferente para cada membro criar o efeito de onda */
+        .member-chip:nth-child(1) { animation-delay: 0s; }
+        .member-chip:nth-child(2) { animation-delay: 0.2s; }
+        .member-chip:nth-child(3) { animation-delay: 0.4s; }
+        .member-chip:nth-child(4) { animation-delay: 0.6s; }
+        .member-chip:nth-child(5) { animation-delay: 0.8s; }
+        .member-chip:nth-child(6) { animation-delay: 1s; }
 
         .results {
-            margin-top: 30px;
+            margin-top: 25px;
             border-top: 1px solid var(--border-color);
             padding-top: 20px;
         }
 
-        /* Cartão com Animação */
         .result-card {
             background: rgba(125, 95, 255, 0.05);
             margin-bottom: 12px;
@@ -85,146 +145,117 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid transparent;
-            transition: transform 0.2s;
-            
-            /* Animação suave ao atualizar */
             animation: fadeIn 0.5s ease forwards;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .result-card:hover {
-            transform: translateX(5px);
-            border-color: rgba(125, 95, 255, 0.3);
-        }
-
-        .country-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .country-name {
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--accent-color);
-        }
-
-        .date-info {
-            font-size: 0.75rem;
-            color: var(--text-dim);
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .time-value {
-            font-size: 1.1rem; /* Ajustado para caber o AM/PM confortavelmente */
-            font-weight: 400;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: var(--text-main);
-        }
-
-        select option {
-            background: var(--card-bg);
+            font-weight: 600;
+            color: var(--accent-color);
         }
     </style>
 </head>
 <body>
 
-<section>
-    <div class="input-row">
-        <label>Where are you?</label>
-        <select id="originCountry">
-            <option value="Africa/Luanda">Angola 🇦🇴</option>
-            <option value="Europe/Skopje">Macedónia 🇲🇰</option>
-            <option value="America/Sao_Paulo">Brasil (MG) 🇧🇷</option>
-            <option value="Asia/Jakarta">Indonésia 🇮🇩</option>
-        </select>
+    <div class="brand">
+        <h1>Buddy Dam Timer</h1>
+        <p>Compare the time for the Meeting</p>
     </div>
 
-    <div class="input-row">
-        <label>What's the time there?</label>
-        <input type="datetime-local" id="inputDateTime">
-    </div>
-
-    <div id="output" class="results">
+    <section>
+        <div class="input-row">
+            <label>Where are you?</label>
+            <select id="originCountry">
+                <option value="Africa/Luanda">Angola 🇦🇴</option>
+                <option value="Europe/Skopje">Macedónia 🇲🇰</option>
+                <option value="America/Sao_Paulo">Brasil (MG) 🇧🇷</option>
+                <option value="Asia/Jakarta">Indonésia 🇮🇩</option>
+            </select>
         </div>
-</section>
 
-<script>
-    const inputDateTime = document.getElementById('inputDateTime');
-    const originCountry = document.getElementById('originCountry');
-    const output = document.getElementById('output');
+        <div class="input-row">
+            <label>What`s the time there?</label>
+            <input type="datetime-local" id="inputDateTime">
+        </div>
 
-    const now = new Date();
-    const tzOffset = now.getTimezoneOffset() * 60000;
-    const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 16);
-    inputDateTime.value = localISOTime;
+        <div id="output" class="results"></div>
+    </section>
 
-    function updateTimes() {
-        const val = inputDateTime.value;
-        if (!val) return;
+    <div class="team-section">
+    		<h2>Hi!</h2>
+        <div class="member-chip">👤 Elizângela</div>
+        <div class="member-chip">👤 Travel</div>
+        <div class="member-chip">👤 Ucai</div>
+        <div class="member-chip">👤 Eduardo</div>
+        <div class="member-chip">👤 Tulio</div>
+    </div>
 
-        const countries = [
-            { name: "Angola", zone: "Africa/Luanda", flag: "🇦🇴" },
-            { name: "Macedónia", zone: "Europe/Skopje", flag: "🇲🇰" },
-            { name: "Brasil (MG)", zone: "America/Sao_Paulo", flag: "🇧🇷" },
-            { name: "Indonésia", zone: "Asia/Jakarta", flag: "🇮🇩" }
-        ];
+    <script>
+        const inputDateTime = document.getElementById('inputDateTime');
+        const originCountry = document.getElementById('originCountry');
+        const output = document.getElementById('output');
 
-        const formatter = new Intl.DateTimeFormat('en-US', {
-            timeZone: originCountry.value,
-            year: 'numeric', month: 'numeric', day: 'numeric',
-            hour: 'numeric', minute: 'numeric', second: 'numeric',
-            hour12: false
-        });
-        
-        const parts = formatter.formatToParts(new Date(val));
-        const map = new Map(parts.map(p => [p.type, p.value]));
-        const targetDate = new Date(`${map.get('year')}-${map.get('month')}-${map.get('day')} ${map.get('hour')}:${map.get('minute')}`);
-        const diff = new Date(val) - targetDate;
-        const finalBaseDate = new Date(new Date(val).getTime() + diff);
+        // Inicialização
+        const now = new Date();
+        const tzOffset = now.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 16);
+        inputDateTime.value = localISOTime;
 
-        let html = '';
+        function updateTimes() {
+            const val = inputDateTime.value;
+            if (!val) return;
 
-        countries.forEach(c => {
-            const dateStr = finalBaseDate.toLocaleDateString('pt-BR', { timeZone: c.zone, day: '2-digit', month: 'short' });
-            
-            // Alterado para incluir AM/PM usando en-US como localizador de tempo
-            const timeStr = finalBaseDate.toLocaleTimeString('en-US', { 
-                timeZone: c.zone, 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: true 
+            const countries = [
+                { name: "Angola", zone: "Africa/Luanda", flag: "🇦🇴" },
+                { name: "Macedónia", zone: "Europe/Skopje", flag: "🇲🇰" },
+                { name: "Brasil (MG)", zone: "America/Sao_Paulo", flag: "🇧🇷" },
+                { name: "Indonésia", zone: "Asia/Jakarta", flag: "🇮🇩" }
+            ];
+
+            // Cálculo do fuso baseado na seleção
+            const formatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: originCountry.value,
+                year: 'numeric', month: 'numeric', day: 'numeric',
+                hour: 'numeric', minute: 'numeric', second: 'numeric',
+                hour12: false
             });
+            
+            const parts = formatter.formatToParts(new Date(val));
+            const map = new Map(parts.map(p => [p.type, p.value]));
+            const targetDate = new Date(`${map.get('year')}-${map.get('month')}-${map.get('day')} ${map.get('hour')}:${map.get('minute')}`);
+            const diff = new Date(val) - targetDate;
+            const finalBaseDate = new Date(new Date(val).getTime() + diff);
 
-            html += `
-                <div class="result-card">
-                    <div class="country-info">
-                        <span class="country-name">${c.flag} ${c.name}</span>
-                        <span class="date-info">${dateStr}</span>
+            let html = '';
+            countries.forEach(c => {
+                const dateStr = finalBaseDate.toLocaleDateString('pt-BR', { timeZone: c.zone, day: '2-digit', month: 'short' });
+                const timeStr = finalBaseDate.toLocaleTimeString('en-US', { 
+                    timeZone: c.zone, 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+
+                html += `
+                    <div class="result-card">
+                        <div class="country-info">
+                            <span class="country-name">${c.flag} ${c.name}</span>
+                            <span class="date-info">${dateStr}</span>
+                        </div>
+                        <div class="time-value">${timeStr}</div>
                     </div>
-                    <div class="time-value">${timeStr}</div>
-                </div>
-            `;
-        });
+                `;
+            });
+            output.innerHTML = html;
+        }
 
-        output.innerHTML = html;
-    }
-
-    inputDateTime.addEventListener('input', updateTimes);
-    originCountry.addEventListener('change', updateTimes);
-    
-    updateTimes();
-</script>
-
+        inputDateTime.addEventListener('input', updateTimes);
+        originCountry.addEventListener('change', updateTimes);
+        updateTimes();
+    </script>
 </body>
 </html>
