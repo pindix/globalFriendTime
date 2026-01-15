@@ -232,24 +232,31 @@
 
             let html = '';
             countries.forEach(c => {
-                const dateStr = finalBaseDate.toLocaleDateString('pt-BR', { timeZone: c.zone, day: '2-digit', month: 'short' });
-                const timeStr = finalBaseDate.toLocaleTimeString('en-US', { 
-                    timeZone: c.zone, 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    hour12: true 
-                });
-
-                html += `
-                    <div class="result-card">
-                        <div class="country-info">
-                            <span class="country-name">${c.flag} ${c.name}</span>
-                            <span class="date-info">${dateStr}</span>
-                        </div>
-                        <div class="time-value">${timeStr}</div>
-                    </div>
-                `;
+            // Formata a data (Ex: 15 de jan.)
+            const dateStr = finalBaseDate.toLocaleDateString('pt-BR', { 
+                timeZone: c.zone, 
+                day: '2-digit', 
+                month: 'short' 
             });
+
+            // Formata a hora com AM/PM
+            const timeStr = finalBaseDate.toLocaleTimeString('en-US', { 
+                timeZone: c.zone, 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+
+            html += `
+                <div class="result-card">
+                    <div class="country-info" style="display: flex; flex-direction: column;">
+                        <span class="country-name">${c.flag} ${c.name}</span>
+                        <span class="date-info" style="font-size: 0.75rem; color: var(--text-dim);">${dateStr}</span>
+                    </div>
+                    <div class="time-value">${timeStr}</div>
+                </div>
+            `;
+        });
             output.innerHTML = html;
         }
 
