@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Friends Time</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --accent-color: #7d5fff; /* Roxo vibrante */
+            --text-main: #f0f6fc;
+            --text-dim: #8b949e;
+            --border-color: #30363d;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Container Centralizado com Width 90% e Max-Width */
+        section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            width: 90%; /* Ocupa 90% da tela em dispositivos menores */
+            max-width: 500px; /* Limite fixo para telas grandes */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+            margin: 20px;
+        }
+
+        .input-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 20px;
+        }
+
+        .input-row label {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        select, input {
+            flex: 1.5;
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .results {
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        /* Cartão com Animação */
+        .result-card {
+            background: rgba(125, 95, 255, 0.05);
+            margin-bottom: 12px;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+            transition: transform 0.2s;
+            
+            /* Animação suave ao atualizar */
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card:hover {
+            transform: translateX(5px);
+            border-color: rgba(125, 95, 255, 0.3);
+        }
+
+        .country-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .country-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--accent-color);
+        }
+
+        .date-info {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .time-value {
+            font-size: 1.1rem; /* Ajustado para caber o AM/PM confortavelmente */
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--text-main);
+        }
+
+        select option {
+            background: var(--card-bg);
+        }
+    </style>
+</head>
+<body>
+
+<section>
+    <div class="input-row">
+        <label>Where are you?</label>
+        <select id="originCountry">
+            <option value="Africa/Luanda">Angola 🇦🇴</option>
+            <option value="Europe/Skopje">Macedónia 🇲🇰</option>
+            <option value="America/Sao_Paulo">Brasil (MG) 🇧🇷</option>
+            <option value="Asia/Jakarta">Indonésia 🇮🇩</option>
+        </select>
+    </div>
+
+    <div class="input-row">
+        <label>What's the time there?</label>
+        <input type="datetime-local" id="inputDateTime">
+    </div>
+
+    <div id="output" class="results">
+        </div>
+</section>
+
+<script>
+    const inputDateTime = document.getElementById('inputDateTime');
+    const originCountry = document.getElementById('originCountry');
+    const output = document.getElementById('output');
+
+    const now = new Date();
+    const tzOffset = now.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 16);
+    inputDateTime.value = localISOTime;
+
+    function updateTimes() {
+        const val = inputDateTime.value;
+        if (!val) return;
+
+        const countries = [
+            { name: "Angola", zone: "Africa/Luanda", flag: "🇦🇴" },
+            { name: "Macedónia", zone: "Europe/Skopje", flag: "🇲🇰" },
+            { name: "Brasil (MG)", zone: "America/Sao_Paulo", flag: "🇧🇷" },
+            { name: "Indonésia", zone: "Asia/Jakarta", flag: "🇮🇩" }
+        ];
+
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: originCountry.value,
+            year: 'numeric', month: 'numeric', day: 'numeric',
+            hour: 'numeric', minute: 'numeric', second: 'numeric',
+            hour12: false
+        });
+        
+        const parts = formatter.formatToParts(new Date(val));
+        const map = new Map(parts.map(p => [p.type, p.value]));
+        const targetDate = new Date(`${map.get('year')}-${map.get('month')}-${map.get('day')} ${map.get('hour')}:${map.get('minute')}`);
+        const diff = new Date(val) - targetDate;
+        const finalBaseDate = new Date(new Date(val).getTime() + diff);
+
+        let html = '';
+
+        countries.forEach(c => {
+            const dateStr = finalBaseDate.toLocaleDateString('pt-BR', { timeZone: c.zone, day: '2-digit', month: 'short' });
+            
+            // Alterado para incluir AM/PM usando en-US como localizador de tempo
+            const timeStr = finalBaseDate.toLocaleTimeString('en-US', { 
+                timeZone: c.zone, 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+
+            html += `
+                <div class="result-card">
+                    <div class="country-info">
+                        <span class="country-name">${c.flag} ${c.name}</span>
+                        <span class="date-info">${dateStr}</span>
+                    </div>
+                    <div class="time-value">${timeStr}</div>
+                </div>
+            `;
+        });
+
+        output.innerHTML = html;
+    }
+
+    inputDateTime.addEventListener('input', updateTimes);
+    originCountry.addEventListener('change', updateTimes);
+    
+    updateTimes();
+</script>
+
+</body>
+</html>
